@@ -1,7 +1,8 @@
 import { catchAsyncErrors } from "./../middlewares/catchAsyncErrors.js";
-import ErrorHander from "../middlewares/errorMiddleware.js";
 import { User } from "../models/userSchema.js";
 import { generateToken } from "./../utils/jwtToken.js";
+import ErrorHandler from "../middlewares/errorMiddleware.js";
+import cloudinary from "cloudinary";
 
 export const patientRegister = catchAsyncErrors(async (req, res, next) => {
   const {
@@ -26,11 +27,11 @@ export const patientRegister = catchAsyncErrors(async (req, res, next) => {
     !nic ||
     !role
   ) {
-    return next(new ErrorHander("Please Fill Full Form...", 400));
+    return next(new ErrorHandler("Please Fill Full Form...", 400));
   }
   let user = await User.findOne({ email });
   if (user) {
-    return next(new ErrorHander("User is Already Registered...", 400));
+    return next(new ErrorHandler("User is Already Registered...", 400));
   }
   user = await User.create({
     firstName,
@@ -49,23 +50,23 @@ export const patientRegister = catchAsyncErrors(async (req, res, next) => {
 export const login = catchAsyncErrors(async (req, res, next) => {
   const { email, password, confirmPassword, role } = req.body;
   if (!email || !password || !confirmPassword || !role) {
-    return next(new ErrorHander("Please Provide All Details..", 400));
+    return next(new ErrorHandler("Please Provide All Details..", 400));
   }
   if (password !== confirmPassword) {
     return next(
-      new ErrorHander("Password and Confrim Password Must Match...", 400)
+      new ErrorHandler("Password and Confrim Password Must Match...", 400)
     );
   }
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
-    return next(new ErrorHander("Invalid Password or Email...", 400));
+    return next(new ErrorHandler("Invalid Password or Email...", 400));
   }
   const isPasswordMatched = await user.comparePassword(password);
   if (!isPasswordMatched) {
-    return next(new ErrorHander("Invalid Password or Email...", 400));
+    return next(new ErrorHandler("Invalid Password or Email...", 400));
   }
   if (role !== user.role) {
-    return next(new ErrorHander("User with this role not found...", 400));
+    return next(new ErrorHandler("User with this role not found...", 400));
   }
   generateToken(user, "User Login Successfully...", 200, res);
 });
@@ -150,3 +151,80 @@ export const logoutPatient = catchAsyncErrors(async (req, res, next) => {
       message: "Patient Logout Successful...",
     });
 });
+
+export const addNewDoctor = catchAsyncErrors(async (req, res, next) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return next(new ErrorHandler("Doctor Avatar Required!", 400));
+  }
+  const { docAvatar } = req.files;
+  const allowedFormats = ["image/png", "image/jpeg",,"image/jpg", "image/webp"];
+  if (!allowedFormats.includes(docAvatar.mimetype)) {
+    return next(new ErrorHandler("File Format Not Supported!", 400));
+  }
+  const {
+    firstName,
+    lastName,
+    email,
+    phone,
+    nic,
+    dob,
+    gender,
+    password,
+    doctorDepartment,
+  } = req.body;
+  if (
+    !firstName ||
+    !lastName ||
+    !email ||
+    !phone ||
+    !nic ||
+    !dob ||
+    !gender ||
+    !password ||
+    !doctorDepartment ||
+    !docAvatar
+  ) {
+    return next(new ErrorHandler("Please Fill Full Form!", 400));
+  }
+  const isRegistered = await User.findOne({ email });
+  if (isRegistered) {
+    return next(
+      new ErrorHandler("Doctor With This Email Already Exists!", 400)
+    );
+  }
+  const cloudinaryResponse = await cloudinary.uploader.upload(
+    docAvatar.tempFilePath
+  );
+  if (!cloudinaryResponse || cloudinaryResponse.error) {
+    console.error(
+      "Cloudinary Error:",
+      cloudinaryResponse.error || "Unknown Cloudinary error"
+    );
+    return next(
+      new ErrorHandler("Failed To Upload Doctor Avatar To Cloudinary", 500)
+    );
+  }
+  const doctor = await User.create({
+    firstName,
+    lastName,
+    email,
+    phone,
+    nic,
+    dob,
+    gender,
+    password,
+    role: "Doctor",
+    doctorDepartment,
+    docAvatar: {
+      public_id: cloudinaryResponse.public_id,
+      url: cloudinaryResponse.secure_url,
+    },
+  });
+  res.status(200).json({
+    success: true,
+    message: "New Doctor Registered",
+    doctor,
+  });
+});
+
+
