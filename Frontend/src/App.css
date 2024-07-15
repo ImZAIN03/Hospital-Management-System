@@ -1,13 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100..900&display=swap");
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   overflow-x: hidden;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 body {
-  background: #e5e5e5;
+  background: #d0cfcf;
 }
 .btn {
   padding: 7px 20px;
@@ -75,8 +75,8 @@ h6 {
 .hero {
   display: flex;
   gap: 50px;
-  padding-top: 120px;
-  padding-bottom: 120px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   position: relative;
 }
 .hero .banner {
@@ -192,10 +192,10 @@ h6 {
   font-weight: 700;
   width: fit-content;
   border: none;
-  border-radius: 8px;
+  border-radius: 50px;
   font-size: 24px;
   margin-bottom: 30px;
-  background: linear-gradient(140deg, #9083d5, #271776ca);
+  background: linear-gradient(140deg, #1765cb, #271776ca);
 }
 .form-component .wrapper {
   display: flex;
@@ -388,7 +388,7 @@ footer .content div:last-child div svg {
   padding-bottom: 50px;
 }
 .departments h2 {
-  color: gray;
+  color: rgb(49, 48, 48);
   margin-bottom: 30px;
 }
 .card {
