@@ -7,7 +7,7 @@
   font-family: "Poppins", sans-serif;
 }
 body {
-  background: #d0cfcf;
+  background: #b9bfc2;
 }
 .btn {
   padding: 7px 20px;
@@ -63,6 +63,10 @@ h6 {
     font-size: 30px;
     font-weight: 900;
   }
+}
+.nav-container{
+  background-color: #c4a4e3;
+  padding: 0 10%;
 }
 .container {
   padding: 0 100px;
@@ -221,8 +225,14 @@ h6 {
   max-width: 1200px;
   margin: 100px auto 20px auto;
 }
-.login-form h2 {
-  color: #000;
+.login-form h1 {
+  color: #4a1010;
+  font-weight: 800;
+}
+.login-form h5 {
+  color: #251a1a;
+  padding-bottom: 4%;
+  font-weight: 700;
 }
 .register-form h2 {
   color: #000;
