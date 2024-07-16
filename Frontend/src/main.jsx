@@ -14,7 +14,7 @@ const AppWrapper = () => {
     >
       <App />
     </Context.Provider>
-  );
+  ); 
 };
 
 ReactDOM.createRoot(document.getElementById("root")).render(
